@@ -1,36 +1,30 @@
 import open3d as o3d
 import copy
+import pytest
 from pcd_register.preprocessing import preprocess_pointcloud, downsample, compute_features
 
-def test_downsample():
-    # Create a sample point cloud for testing
+
+@pytest.fixture
+def source_pointcloud():
+    return o3d.io.read_point_cloud(o3d.data.DemoICPPointClouds().paths[0])
+
+@pytest.fixture
+def target_pointcloud():
+    return o3d.io.read_point_cloud(o3d.data.DemoICPPointClouds().paths[1])
+
+def test_preprocess_pointcloud(source_pointcloud, target_pointcloud):
+     # Create a sample point cloud for testing
     pointcloud = o3d.io.read_point_cloud(o3d.data.DemoICPPointClouds().paths[0])
     pointcloud_temp = copy.deepcopy(pointcloud)
-    downsampled_pc = downsample(pointcloud_temp, voxel_size=0.05)
+    pointcloud_downsampled, pointcloud_features = preprocess_pointcloud(pointcloud_temp, voxel_size=0.05)
 
-    # Assert that the output
-    assert downsampled_pc is not None
-    assert isinstance(downsampled_pc, o3d.geometry.PointCloud)
-    assert len(downsampled_pc.points) != len(pointcloud.points)
-    assert downsampled_pc is not pointcloud 
+    # Assert that the pointcloud_downsampled
+    assert pointcloud_downsampled is not None
+    assert isinstance(pointcloud_downsampled, o3d.geometry.PointCloud)
+    assert len(pointcloud_downsampled.points) != len(pointcloud.points)
+    assert pointcloud_temp is not pointcloud 
 
-def test_compute_features():
-    # Create a sample point cloud for testing
-    pointcloud = o3d.io.read_point_cloud(o3d.data.DemoICPPointClouds().paths[0])
-    pointcloud_temp = copy.deepcopy(pointcloud)
-    features = compute_features(pointcloud_temp, voxel_size=0.05)
-
-    # Assert that the output
-    assert features is not None
-    assert isinstance(features, o3d.pipelines.registration.Feature)
-    assert pointcloud is not pointcloud_temp
-    
-
-def test_preprocess_pointcloud():
-    # Create a sample point cloud for testing
-    pointcloud = o3d.io.read_point_cloud(o3d.data.DemoICPPointClouds().paths[0])
-    downsampled_pc, features = preprocess_pointcloud(pointcloud, voxel_size=0.05)
-
-    # Assert that the outputs are instances of PointCloud and Feature respectively
-    assert isinstance(downsampled_pc, o3d.geometry.PointCloud)
-    assert isinstance(features, o3d.pipelines.registration.Feature)
+    # Assert that the pointcloud_features
+    assert pointcloud_features is not None
+    assert isinstance(pointcloud_features, o3d.pipelines.registration.Feature)
+    assert pointcloud_temp is not pointcloud

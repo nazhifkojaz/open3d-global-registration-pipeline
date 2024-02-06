@@ -25,6 +25,7 @@ def test_rough_registration(source_pointcloud, target_pointcloud):
     result = rough_registration(source, target, source_features, target_features)
     
     # assert that the output is an instance of RegistrationResult
+    assert result is not None
     assert isinstance(result, o3d.pipelines.registration.RegistrationResult)
 
 def test_fine_registration(source_pointcloud, target_pointcloud):
@@ -36,4 +37,5 @@ def test_fine_registration(source_pointcloud, target_pointcloud):
     result = fine_registration(source, target, result_ransac)
 
     # assert that the output is an instance of RegistrationResult
+    assert result is not None
     assert isinstance(result, o3d.pipelines.registration.RegistrationResult)
