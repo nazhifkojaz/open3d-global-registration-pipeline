@@ -6,10 +6,6 @@ The simplest way to install the package is to clone the repository to a local di
 ```commandline
 git clone https://github.com/nazhifkojaz/open3d-global-registration-pipeline
 ```
-Use Pythons package manager `pip` to install it into your current Python environment:
-```commandline
-pip install -e /path/to/open3d-global-registration-pipeline/repository/clone
-```
 Or to install it directly from git into your current Python environment:
 ```commandline
 pip install git+https://github.com/nazhifkojaz/open3d-global-registration-pipeline
@@ -36,7 +32,7 @@ it will use [`Living Room model`](https://github.com/nazhifkojaz/open3d-global-r
 
 For all available options
 ```
-$ python3 run.py -h
+$ python main.py -h
 ```
 
 ### Useful options
