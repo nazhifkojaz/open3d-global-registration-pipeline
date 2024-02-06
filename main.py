@@ -2,8 +2,7 @@ import open3d as o3d
 import numpy as np
 import argparse
 
-from pcd_register.io import load_pointcloud
-from pcd_register.util import draw_pointcloud, draw_registration_result
+from pcd_register.io import load_pointcloud, draw_pointcloud
 from pcd_register.preprocessing import preprocess_pointcloud
 from pcd_register.registration import rough_registration, fine_registration
 
@@ -16,7 +15,7 @@ def main(method, model, voxel_size, colorize):
         target = load_pointcloud('data/living_target.pcd')
 
     if method == 0:
-        draw_pointcloud([source, target])
+        draw_pointcloud(source, target, np.identity(4), colorize)
         return
     
     source_downsampled, source_features = preprocess_pointcloud(source, voxel_size)
@@ -28,12 +27,12 @@ def main(method, model, voxel_size, colorize):
     result_ransac = rough_registration(source_downsampled, target_downsampled, source_features, target_features, voxel_size=voxel_size)
 
     if method == 2:
-        draw_registration_result(source_downsampled, target_downsampled, result_ransac.transformation)
+        draw_pointcloud(source_downsampled, target_downsampled, result_ransac.transformation)
         return
     
     result_icp = fine_registration(source, target, result_ransac, voxel_size=voxel_size)
     if method == 3:
-        draw_registration_result(source, target, result_icp.transformation, colorize)
+        draw_pointcloud(source, target, result_icp.transformation, colorize)
         return
     
 if __name__ == "__main__":
