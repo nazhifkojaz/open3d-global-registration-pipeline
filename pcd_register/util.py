@@ -13,7 +13,7 @@ def draw_pointcloud(pointclouds):
     """
     o3d.visualization.draw_geometries(pointclouds)
 
-def draw_registration_result(source, target, transformation, colorized):
+def draw_registration_result(source, target, transformation, colorized=1):
     """
     Visualize the registration result.
     
