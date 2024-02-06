@@ -2,20 +2,25 @@ import open3d as o3d
 import numpy as np
 import argparse
 
-from pcd_register.io import load_pointcloud, draw_pointcloud, draw_registration_result
+from pcd_register.io import load_pointcloud
+from pcd_register.util import draw_pointcloud, draw_registration_result
 from pcd_register.preprocessing import preprocess_pointcloud
 from pcd_register.registration import rough_registration, fine_registration
 
-def main(method, voxel_size):
-    source = load_pointcloud('data/cloud_bin_0.pcd')
-    target = load_pointcloud('data/cloud_bin_1.pcd')
+def main(method, model, voxel_size, colorize):
+    if model == 1:
+        source = load_pointcloud('data/office_source.pcd')
+        target = load_pointcloud('data/office_source.pcd')
+    else:
+        source = load_pointcloud('data/living_source.pcd')
+        target = load_pointcloud('data/living_target.pcd')
 
     if method == 0:
         draw_pointcloud([source, target])
         return
     
-    source_downsampled, source_features = preprocess_pointcloud(source, voxel_size=voxel_size)
-    target_downsampled, target_features = preprocess_pointcloud(target, voxel_size=voxel_size)
+    source_downsampled, source_features = preprocess_pointcloud(source, voxel_size)
+    target_downsampled, target_features = preprocess_pointcloud(target, voxel_size)
 
     if method == 1:
         draw_pointcloud([source_downsampled, target_downsampled])
@@ -28,7 +33,7 @@ def main(method, voxel_size):
     
     result_icp = fine_registration(source, target, result_ransac, voxel_size=voxel_size)
     if method == 3:
-        draw_registration_result(source, target, result_icp.transformation)
+        draw_registration_result(source, target, result_icp.transformation, colorize)
         return
     
 if __name__ == "__main__":
@@ -51,8 +56,16 @@ if __name__ == "__main__":
     method += "2: Rough Registration.\n"
     method += "3: Fine Registration.\n"
     parser.add_argument("--method", type=int, choices=[0, 1, 2, 3], default=3, help=method)
+
+    model = "Model to use\n"
+    model += "0: Living room\n"
+    model += "1: Office\n"
+    parser.add_argument("--model", type=int, choices=[0, 1], default=0, help=model)
+
     parser.add_argument("--voxel_size", type=float, default=0.05, help="Voxel size for downsampling.")
+
+    parser.add_argument("--colorize", type=int, choices=[0, 1], default=1, help="Colorize the model.")
 
     args = parser.parse_args()
     
-    main(args.method, args.voxel_size)
+    main(args.method, args.model, args.voxel_size, args.colorize)
