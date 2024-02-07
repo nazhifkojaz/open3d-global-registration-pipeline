@@ -22,6 +22,7 @@ def draw_pointcloud(source, target, transformation, colorized=1):
     - source (open3d.geometry.PointCloud): source point cloud object.
     - target (open3d.geometry.PointCloud): target point cloud object.
     - transformation (numpy.ndarray): transformation matrix.
+    - colorized (int): flag to colorize the point clouds (default: 1).
     
     Returns:
     - None

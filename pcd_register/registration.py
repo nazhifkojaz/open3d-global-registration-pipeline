@@ -1,19 +1,20 @@
 import open3d as o3d
 
-def rough_registration(source, target, source_features=None, target_features=None, voxel_size=0.5):
+def rough_registration(source, target, source_features, target_features, voxel_size=0.5):
     """
     Rough registration of two pointclouds
     
     Args:
     - source: open3d.geometry.PointCloud
     - target: open3d.geometry.PointCloud
-    - source_features: open3d.pipelines.registration.Feature (default: None)
-    - target_features: open3d.pipelines.registration.Feature (default: None)
+    - source_features: open3d.pipelines.registration.Feature 
+    - target_features: open3d.pipelines.registration.Feature
     - voxel_size: float (default: 0.5)
 
     Returns:
     - result: open3d.pipelines.registration.RegistrationResult
     """
+
     distance_threshold = voxel_size * 1.5
     result = o3d.pipelines.registration.registration_ransac_based_on_feature_matching(
         source, target, source_features, target_features, True,
@@ -40,6 +41,7 @@ def fine_registration(source, target, result_ransac, voxel_size=0.05):
     Returns:
     - result: open3d.pipelines.registration.RegistrationResult
     """
+    
     distance_threshold = voxel_size * 0.4
     result = o3d.pipelines.registration.registration_icp(
         source, target, distance_threshold, result_ransac.transformation,
