@@ -9,10 +9,6 @@ from pcd_register.preprocessing import preprocess_pointcloud, downsample, comput
 def load_pointcloud():
     return o3d.io.read_point_cloud(o3d.data.DemoICPPointClouds().paths[0])
 
-@pytest.fixture
-def target_pointcloud():
-    return o3d.io.read_point_cloud(o3d.data.DemoICPPointClouds().paths[1])
-
 def test_preprocess_pointcloud(load_pointcloud):
     # Load a sample pointcloud from demo data
     pointcloud = load_pointcloud
@@ -30,20 +26,44 @@ def test_preprocess_pointcloud(load_pointcloud):
     assert isinstance(pointcloud_features, o3d.pipelines.registration.Feature)
     assert pointcloud_temp is not pointcloud
 
+def test_downsample_invalid_input(load_pointcloud):
+    # Test failure case when invalid input is provided
+    with pytest.raises(AttributeError):
+        downsample(None, 0.05)
+
+    with pytest.raises(TypeError):
+        downsample(load_pointcloud, None)
+
+    with pytest.raises(ValueError):
+        downsample(load_pointcloud, -0.05)
+
 def test_downsample_consistency(load_pointcloud):
     pointcloud_downsampled_1 = downsample(load_pointcloud)
     pointcloud_downsampled_2 = downsample(load_pointcloud)
 
+    # Assert that the downsampled point clouds are consistent
     assert np.allclose(pointcloud_downsampled_1.points, pointcloud_downsampled_2.points)
 
 def test_compute_features_dimension(load_pointcloud):
-    pointcloud = load_pointcloud
-    pointcloud_features = compute_features(pointcloud)
+    pointcloud_features = compute_features(load_pointcloud)
 
+    # Assert that the dimension of the features is as expected (33)
     assert pointcloud_features.data.shape[0] == 33
 
 def test_compute_features_consistency(load_pointcloud):
     pointcloud_fpfh_1 = compute_features(load_pointcloud)
     pointcloud_fpfh_2 = compute_features(load_pointcloud)
 
+    # Assert that the computed features are consistent
     assert np.allclose(pointcloud_fpfh_1.data, pointcloud_fpfh_2.data)
+
+def test_compute_features_invalid_input(load_pointcloud):
+    # Test failure case when invalid input is provided
+    with pytest.raises(AttributeError):
+        compute_features(None)
+
+    with pytest.raises(TypeError):
+        compute_features(load_pointcloud, None)
+
+    with pytest.raises(ValueError):
+        compute_features(load_pointcloud, -0.05)

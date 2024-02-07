@@ -27,6 +27,9 @@ def downsample(pointcloud, voxel_size=0.05):
     Returns:
     - downsampled_pointcloud: open3d.geometry.PointCloud
     """
+    if voxel_size <= 0:
+        raise ValueError("voxel_size must be a positive value")
+    
     return pointcloud.voxel_down_sample(voxel_size)
 
 def compute_features(pointcloud, voxel_size=0.05):
@@ -40,6 +43,10 @@ def compute_features(pointcloud, voxel_size=0.05):
     Returns:
     - pointcloud_fpfh: open3d.pipelines.registration.Feature
     """
+
+    if voxel_size <= 0:
+        raise ValueError("voxel_size must be a positive value")
+    
     radius_normal = voxel_size * 2
     pointcloud.estimate_normals(
         o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
